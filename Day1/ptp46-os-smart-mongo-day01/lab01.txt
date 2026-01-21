@@ -1,0 +1,117 @@
+MongoDB Lab1
+1- Install mongodb server and mongosh client 
+ok
+
+2- Add mongo DB folder to your system variables path
+Go to -> Edit System environment variables -> Environment varaibles->
+inside system variables choose path and add “C:\Program
+Files\MongoDB\Server\4.0\bin” apply and exit.
+3- Open server (on windows shell using command “mongod”);
+4- Open another shell for client using command “mongosh” or noSqlBoost
+Tool
+
+
+5- Create database with name ITI  by typing use ITI
+
+
+6- start create new collection named instructors and start with following
+inserts
+iti> db.createCollection("instructors")
+{ ok: 1 }
+
+
+
+
+
+
+a- Insert many using array contained with lab folder instructors.txt file.
+
+iti> load("instructorsArray.js")
+true
+iti> db.instructors.insertMany("instructorsArray")
+iti> db.instructors.insertMany(instructorsArray)
+{
+  acknowledged: true,
+  insertedIds: { '0': 6, '1': 7, '2': 8, '3': 9, '4': 10, '5': 2, '6': 3, '7': 4 	}
+}
+
+
+
+b- Insert your own data
+
+iti> db.instructors.insertOne({ _id:99, firstName:"Ebrahim",lastName:"Mostafa", age:23, salary: 33000, address:{city: "cairo",street:20,building:13 },courses:["js","mvc","signal","express"]  })
+{ acknowledged: true, insertedId: 99 }
+iti> 
+
+
+
+c- Insert instructor without firstName and LastName (mongo will raise an
+error or not ?)
+added successfully without any errors
+iti> db.instructors.insertOne({ _id:90, age:23, salary: 33000, address:{city: "cairo",street:20,building:13 },courses:["js","mvc","signal","express"]  })
+{ acknowledged: true, insertedId: 90 }
+iti> 
+
+
+
+
+
+7- Try the following queries: (all queries should be run using find or findOne)
+a- db.instructors.find({});
+
+this shows all documets
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+b- db.instructors.find(); //return the cursor object
+the same as the above
+
+c- db.instructors.findOne();
+shows only the first document
+
+
+
+
+
+
+
+
+
+
+
+
+
+d- db.instructors.find().constructor.name
+return the name of the constructor function which created the object
+
+
+
+
+e- db.instructors.find({}).forEach((document)=>{
+    print(document); })
+shows all documents
+f-Now from step e try to display only firstName and lastName for each
+instructor?!
+
+

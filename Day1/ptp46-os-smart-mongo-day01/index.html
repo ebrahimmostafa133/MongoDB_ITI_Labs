@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB Cheatsheet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #13aa52;
+            --primary-dark: #0d8c42;
+            --secondary: #001e2b;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .mongo-icon {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .category-section {
+            margin-bottom: 30px;
+        }
+
+        .category-title {
+            background-color: white;
+            padding: 15px 20px;
+            border-left: 5px solid var(--primary);
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--box-shadow);
+        }
+
+        .category-title i {
+            margin-right: 10px;
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .command-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .command-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .command-header {
+            background-color: var(--light-gray);
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .command-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--secondary);
+        }
+
+        .command-type {
+            background-color: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .command-body {
+            padding: 20px;
+        }
+
+        .command-syntax {
+            background-color: var(--secondary);
+            color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            font-family: 'Courier New', Courier, monospace;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .command-syntax code {
+            color: var(--warning);
+        }
+
+        .command-desc {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .command-example {
+            margin-top: 15px;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--info);
+            padding: 12px 15px;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .example-code {
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .query-type {
+            background-color: var(--info);
+        }
+
+        .update-type {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .delete-type {
+            background-color: var(--danger);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-gray);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .commands-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-leaf mongo-icon"></i> MongoDB Cheatsheet</h1>
+            <p class="subtitle">Quick reference for MongoDB commands, operations, and query syntax. Essential commands for database operations, CRUD, aggregation, and more.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Database Operations -->
+        <section class="category-section">
+            <div class="category-title">
+                <i class="fas fa-database"></i>
+                <h2>Database Operations</h2>
+            </div>
+            
+            <div class="commands-grid">
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Show Databases</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">show <code>dbs</code></div>
+                        <p class="command-desc">Lists all databases on the MongoDB server</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">show dbs</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Use Database</div>
+                        <div class="command-type">Command</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">use <code>&lt;database_name&gt;</code></div>
+                        <p class="command-desc">Switches to a specific database (creates it if it doesn't exist)</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">use myDatabase</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Current Database</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db</div>
+                        <p class="command-desc">Displays the current database name</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Collection Operations -->
+        <section class="category-section">
+            <div class="category-title">
+                <i class="fas fa-table"></i>
+                <h2>Collection Operations</h2>
+            </div>
+            
+            <div class="commands-grid">
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Show Collections</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">show <code>collections</code></div>
+                        <p class="command-desc">Lists all collections in the current database</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">show collections</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Create Collection</div>
+                        <div class="command-type">Command</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db.createCollection(<code>"collection_name"</code>)</div>
+                        <p class="command-desc">Creates a new collection with the specified name</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.createCollection("users")</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Drop Collection</div>
+                        <div class="command-type delete-type">Delete</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db.<code>&lt;collection_name&gt;</code>.drop()</div>
+                        <p class="command-desc">Removes a collection from the database</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.drop()</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- CRUD Operations -->
+        <section class="category-section">
+            <div class="category-title">
+                <i class="fas fa-plus-circle"></i>
+                <h2>CRUD Operations</h2>
+            </div>
+            
+            <div class="commands-grid">
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Insert Document</div>
+                        <div class="command-type">Create</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db.<code>&lt;collection&gt;</code>.insertOne(<code>{field: value}</code>)</div>
+                        <p class="command-desc">Inserts a single document into a collection</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.insertOne({name: "John", age: 30, city: "NYC"})</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Find Documents</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db.<code>&lt;collection&gt;</code>.find(<code>{query}</code>)</div>
+                        <p class="command-desc">Retrieves documents that match the query criteria</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.find({age: {$gt: 25}})</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Update Document</div>
+                        <div class="command-type update-type">Update</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db.<code>&lt;collection&gt;</code>.updateOne(<code>{filter}, {$set: {update}}</code>)</div>
+                        <p class="command-desc">Updates a single document matching the filter</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.updateOne({name: "John"}, {$set: {age: 31}})</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Delete Document</div>
+                        <div class="command-type delete-type">Delete</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db.<code>&lt;collection&gt;</code>.deleteOne(<code>{filter}</code>)</div>
+                        <p class="command-desc">Deletes a single document matching the filter</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.deleteOne({name: "John"})</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Query Operators -->
+        <section class="category-section">
+            <div class="category-title">
+                <i class="fas fa-search"></i>
+                <h2>Query Operators</h2>
+            </div>
+            
+            <div class="commands-grid">
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Comparison Operators</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax"><code>$eq, $ne, $gt, $gte, $lt, $lte, $in, $nin</code></div>
+                        <p class="command-desc">Compare values in queries</p>
+                        <div class="command-example">
+                            <div class="example-title">Examples:</div>
+                            <div class="example-code">db.users.find({age: {$gt: 25}})</div>
+                            <div class="example-code">db.users.find({status: {$in: ["active", "pending"]}})</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Logical Operators</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax"><code>$and, $or, $not, $nor</code></div>
+                        <p class="command-desc">Combine multiple query conditions</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.find({$or: [{age: {$lt: 25}}, {status: "active"}]})</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Element Operators</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax"><code>$exists, $type</code></div>
+                        <p class="command-desc">Check for field existence or data type</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.find({email: {$exists: true}})</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Aggregation -->
+        <section class="category-section">
+            <div class="category-title">
+                <i class="fas fa-chart-line"></i>
+                <h2>Aggregation Framework</h2>
+            </div>
+            
+            <div class="commands-grid">
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Aggregation Pipeline</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db.<code>&lt;collection&gt;</code>.aggregate([<code>{$stage1}, {$stage2}</code>])</div>
+                        <p class="command-desc">Process data through multiple pipeline stages</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.orders.aggregate([
+  {$match: {status: "completed"}},
+  {$group: {_id: "$product", total: {$sum: "$amount"}}}
+])</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Common Stages</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax"><code>$match, $group, $sort, $project, $limit, $skip</code></div>
+                        <p class="command-desc">Frequently used aggregation pipeline stages</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.aggregate([
+  {$match: {age: {$gt: 20}}},
+  {$sort: {age: -1}},
+  {$limit: 10}
+])</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Aggregation Operators</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax"><code>$sum, $avg, $min, $max, $push, $addToSet</code></div>
+                        <p class="command-desc">Operators used within $group stage</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.sales.aggregate([
+  {$group: {_id: "$region", total: {$sum: "$amount"}, avg: {$avg: "$amount"}}}
+])</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Indexes -->
+        <section class="category-section">
+            <div class="category-title">
+                <i class="fas fa-bolt"></i>
+                <h2>Index Operations</h2>
+            </div>
+            
+            <div class="commands-grid">
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Create Index</div>
+                        <div class="command-type">Command</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db.<code>&lt;collection&gt;</code>.createIndex(<code>{field: 1}</code>)</div>
+                        <p class="command-desc">Creates an index on a field (1 for ascending, -1 for descending)</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.createIndex({email: 1})</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">List Indexes</div>
+                        <div class="command-type query-type">Query</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db.<code>&lt;collection&gt;</code>.getIndexes()</div>
+                        <p class="command-desc">Displays all indexes on a collection</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.getIndexes()</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-title">Drop Index</div>
+                        <div class="command-type delete-type">Delete</div>
+                    </div>
+                    <div class="command-body">
+                        <div class="command-syntax">db.<code>&lt;collection&gt;</code>.dropIndex(<code>"index_name"</code>)</div>
+                        <p class="command-desc">Removes a specific index from a collection</p>
+                        <div class="command-example">
+                            <div class="example-title">Example:</div>
+                            <div class="example-code">db.users.dropIndex("email_1")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer container">
+        <p>MongoDB Cheatsheet • Reference for MongoDB commands and operations • <a href="https://docs.mongodb.com/" target="_blank">Official MongoDB Documentation</a></p>
+        <p style="margin-top: 10px;">Created with <i class="fas fa-heart" style="color: var(--danger);"></i> for MongoDB developers</p>
+    </footer>
+</body>
+</html>
